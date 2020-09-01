@@ -8,10 +8,9 @@
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 16px 24px;
-}
 
-.header {
   h1 {
     line-height: 32px;
     color: #000000;
@@ -34,7 +33,7 @@
     margin-right: 4px;
   }
 
-  &:hover {
+  &-active {
     color: #0075ff;
 
     svg path {
