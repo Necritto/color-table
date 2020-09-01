@@ -2,23 +2,44 @@ import React, { useState, useEffect } from "react";
 import "./Table.scss";
 import checkSvg from "../../assets/check.svg";
 
+import { Loader } from "../Loader/Loader";
+
+import classnames from "classnames";
+
 export const Table = () => {
   const [items, setItems] = useState([]);
+  const [check, setCheck] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch("https://reqres.in/api/unknown?per_page=12")
       .then((resp) => resp.json())
-      .then((items) => setItems(items.data));
+      .then((items) => setItems(items.data), setIsLoading(false));
   }, []);
 
-  const onChangeHandler = () => {};
+  const onChangeHandler = (e) => {
+    setCheck(true);
+    const elems = document.querySelectorAll(`.table__item-${e.target.id}`);
+    elems.forEach((el) => (el.style.display = "none"));
+  };
+
+  const onClickHandler = () => {
+    setCheck(false);
+    const elems = document.querySelectorAll(`.table__item`);
+    elems.forEach((el) => (el.style.display = ""));
+  };
 
   return (
     <div className="container">
       <header className="header">
         <h1>Pantone colors</h1>
         <div className="reset">
-          <button className="reset__btn">
+          <button
+            className={classnames("reset__btn", {
+              "reset__btn-active": check === true,
+            })}
+            onClick={onClickHandler}
+          >
             <svg
               width="18"
               height="18"
@@ -54,7 +75,7 @@ export const Table = () => {
               <th className="table__item table__item-id">
                 <input
                   type="checkbox"
-                  checked={true}
+                  checked={check}
                   onChange={onChangeHandler}
                   name="id"
                   id="id"
@@ -63,10 +84,10 @@ export const Table = () => {
                   <img src={checkSvg} alt="Check" /> Id
                 </label>
               </th>
-              <th className="table__item">
+              <th className="table__item table__item-name">
                 <input
                   type="checkbox"
-                  checked={true}
+                  checked={check}
                   onChange={onChangeHandler}
                   name="name"
                   id="name"
@@ -78,7 +99,7 @@ export const Table = () => {
               <th className="table__item table__item-year">
                 <input
                   type="checkbox"
-                  checked={true}
+                  checked={check}
                   onChange={onChangeHandler}
                   name="year"
                   id="year"
@@ -90,7 +111,7 @@ export const Table = () => {
               <th className="table__item table__item-color">
                 <input
                   type="checkbox"
-                  checked={true}
+                  checked={check}
                   onChange={onChangeHandler}
                   name="color"
                   id="color"
@@ -99,22 +120,25 @@ export const Table = () => {
                   <img src={checkSvg} alt="Check" /> Color
                 </label>
               </th>
-              <th className="table__item">
+              <th className="table__item table__item-pantone_value">
                 <input
                   type="checkbox"
-                  checked={true}
+                  checked={check}
                   onChange={onChangeHandler}
-                  name="pantone"
-                  id="pantone"
+                  name="pantone_value"
+                  id="pantone_value"
                 />
-                <label htmlFor="pantone">
+                <label htmlFor="pantone_value">
                   <img src={checkSvg} alt="Check" /> Pantone value
                 </label>
               </th>
             </tr>
           </thead>
           <tbody>
-            {items &&
+            {isLoading ? (
+              <Loader />
+            ) : (
+              items &&
               items.map((item, index) => (
                 <tr key={item.id + index}>
                   <td className="table__item table__item-id">{item.id}</td>
@@ -126,9 +150,12 @@ export const Table = () => {
                       {item.color}
                     </div>
                   </td>
-                  <td className="table__item">{item.pantone_value}</td>
+                  <td className="table__item table__item-pantone_value">
+                    {item.pantone_value}
+                  </td>
                 </tr>
-              ))}
+              ))
+            )}
           </tbody>
         </table>
       </main>
